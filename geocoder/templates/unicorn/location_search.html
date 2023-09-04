@@ -1,0 +1,44 @@
+{% block content %}
+
+<div class="container">
+    <div class="flex flex-col">
+        <form class="form-inline" unicorn:submit.prevent="search" autocomplete="off">
+            <div class="flex relative">
+                <input autocomplete="off" type="text" class="textinput rounded-r-none mb-0" placeholder="Search..." unicorn:model="searchtext" unicorn:key="searchkey" id="search-input" />
+                <button id="submit-search" type="submit" class="input-button rounded-l-none">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+        {% if search_results %}
+        <div class="dropdown">
+            <ul id="results-list" class="dropdown-menu show dropdown-full result-scroll" aria-labelledby="search-input">
+                {% for result in search_results %}
+                <li>
+                    <a {%if redirect%} href="/events?lat={{result.properties.geom.lat}}&lon={{result.properties.geom.lon}}" {%else%} unicorn:click="focus('{{ result.properties.id}}')" {%endif%}>{{ result.properties.name1 }}{% if result.properties.populated_place %} - {{ result.properties.populated_place }}{% endif %}, {{ result.properties.region }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+        <script type="text/javascript">
+            function reload_map(geojson) {
+				window.map.clearSelected();
+				if(geojson&&geojson.features&&geojson.features.length>0)
+				    window.map.addGeojson(geojson);
+			}
+
+			function set_selected(id) {
+				window.map.setSelected(id,10);
+            }
+
+        </script>
+{% endblock %}
+
